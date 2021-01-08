@@ -1,0 +1,37 @@
+version: "3.4"
+services:
+  server:
+    container_name: backend
+    # Tell docker what file to build the backend from
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Environment variables
+    env_file:
+      - .env
+    environment:
+      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
+      - DB_NAME=${DB_NAME}
+      - TOKEN_KEY=${TOKEN_KEY}
+    # Port mapping
+    ports:
+      - 8080:8080
+    # Volumes to mount
+    volumes:
+      - .:/dist/main
+    # Connect to other containers
+    links:
+      - db
+  ##########################
+  ### SETUP DB CONTAINER
+  ##########################
+  db:
+    container_name: mongodb
+    image: mongo
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_DATABASE= ${DB_NAME}
+    ports:
+      - 27017:27017
+    restart: always
